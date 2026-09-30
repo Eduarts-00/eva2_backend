@@ -7,7 +7,12 @@ Año: 2026
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.generic import TemplateView, RedirectView
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+
+from django.shortcuts import render
+
+def custom_404_view(request, exception=None):
+    return render(request, '404_custom.html', status=404)
 
 urlpatterns = [
     # Vista HTML Base (Portal de Inicio)
@@ -23,10 +28,11 @@ urlpatterns = [
     path('api/', include('inventory.urls')),
     path('api/', include('orders.urls')),
     
-    # Documentación Swagger / OpenAPI
+    # Documentación Swagger / OpenAPI / Redoc
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
-    # Catch-all: Redirección global de errores 404 (cualquier ruta extraña va al inicio)
-    re_path(r'^.*$', RedirectView.as_view(url='/', permanent=False), name='redirect-404'),
+    # Catch-all: Página de error 404 bonita
+    re_path(r'^.*$', custom_404_view, name='error-404'),
 ]

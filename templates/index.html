@@ -3,96 +3,378 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma B2B - Farmacia</title>
-    <!-- Incluyendo Bootstrap para un diseño moderno y responsive -->
+    <title>Tienda B2B - Farmacia</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            background-color: #f8f9fa;
-        }
-        main {
-            flex: 1;
-        }
-        .hero-section {
-            background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
-            color: white;
-            padding: 4rem 2rem;
-            text-align: center;
-            border-radius: 0 0 20px 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .card-custom {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: none;
-            border-radius: 15px;
-        }
-        .card-custom:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-        .footer {
-            background-color: #212529;
-            color: rgba(255, 255, 255, 0.8);
-            padding: 1.5rem 0;
-            margin-top: auto;
-        }
+        body { background-color: #f8f9fa; display: flex; flex-direction: column; min-height: 100vh; }
+        main { flex: 1; }
+        .hero { background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%); color: white; padding: 3rem 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .product-card { transition: transform 0.2s; border: none; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+        .footer { background-color: #212529; color: #ccc; padding: 1.5rem 0; margin-top: 3rem; text-align: center; }
+        #alert-container { position: fixed; top: 20px; right: 20px; z-index: 1055; min-width: 300px; }
+        .nav-tabs .nav-link { color: #495057; }
     </style>
 </head>
 <body>
-    <!-- Barra de Navegación -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+
+    <div id="alert-container"></div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">⚕️ Farmacia API B2B</a>
+            <a class="navbar-brand fw-bold" href="#">⚕️ MediStock B2B</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item me-3"><a class="nav-link text-info" href="/api/docs/" target="_blank"><i class="bi bi-book"></i> Swagger API</a></li>
+                    <li class="nav-item me-3"><a class="nav-link text-success" href="/admin/" target="_blank"><i class="bi bi-gear"></i> Admin Panel</a></li>
+                    <li class="nav-item" id="nav-cart" style="display: none;">
+                        <button class="btn btn-warning position-relative me-3" data-bs-toggle="modal" data-bs-target="#cartModal">
+                            <i class="bi bi-cart3"></i> Mi Carro
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-badge">0</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" id="nav-login">
+                        <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#authModal">Acceder / Registrarse</button>
+                    </li>
+                    <li class="nav-item" id="nav-logout" style="display: none;">
+                        <button class="btn btn-outline-danger" onclick="logout()">Cerrar Sesión</button>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
-    <main class="container my-4">
-        <!-- Sección Principal -->
-        <div class="hero-section mb-5">
-            <h1 class="display-4 fw-bold">Sistema de Abastecimiento Médico</h1>
-            <p class="lead mt-3">Plataforma Backend (API REST) con seguridad JWT, control transaccional de inventario y carrito de compras persistente.</p>
+    <div class="hero mb-4 text-center">
+        <div class="container">
+            <h1 class="display-5 fw-bold">Demostración Frontend -> Backend API</h1>
+            <p class="lead">Esta tienda visual consume la API REST de Django en tiempo real mediante tokens JWT.</p>
         </div>
-        
-        <!-- Tarjetas de Acceso -->
-        <div class="row g-4 justify-content-center">
-            
-            <div class="col-md-5">
-                <div class="card card-custom h-100 shadow-sm p-4 text-center">
-                    <div class="card-body">
-                        <div class="display-3 mb-3">🛠️</div>
-                        <h2 class="card-title h4 fw-bold">Panel de Administración</h2>
-                        <p class="card-text text-muted mb-4">Interfaz exclusiva para el Gestor de Bodega. Permite crear usuarios, gestionar permisos y ver el estado real de la base de datos.</p>
-                        <a href="/admin/" class="btn btn-success btn-lg w-100 rounded-pill">Entrar a Django Admin</a>
-                    </div>
-                </div>
-            </div>
+    </div>
 
-            <div class="col-md-5">
-                <div class="card card-custom h-100 shadow-sm p-4 text-center">
-                    <div class="card-body">
-                        <div class="display-3 mb-3">📖</div>
-                        <h2 class="card-title h4 fw-bold">Documentación API</h2>
-                        <p class="card-text text-muted mb-4">Interfaz interactiva (Swagger) para que la Institución Médica y el Gestor realicen pruebas de los endpoints y transacciones.</p>
-                        <a href="/api/docs/" class="btn btn-primary btn-lg w-100 rounded-pill">Abrir Swagger UI</a>
-                    </div>
-                </div>
-            </div>
-
+    <main class="container">
+        <h2 class="mb-4 fw-bold text-secondary">Catálogo de Insumos</h2>
+        <div class="row" id="catalog-container">
+            <div class="text-center w-100 py-5"><div class="spinner-border text-primary"></div></div>
         </div>
     </main>
-    
-    <!-- Footer Obligatorio según Pauta -->
-    <footer class="footer text-center mt-5">
+
+    <footer class="footer">
         <div class="container">
-            <p class="mb-0 fs-5">
-                <strong>Datos del Alumno:</strong> Edu | 
-                <strong>Sección:</strong> Por defecto | 
-                <strong>Año:</strong> 2026
-            </p>
+            <p class="mb-0">Desarrollo Backend: Edu | Sección: IEC-N4-C2 | Año: 2026</p>
         </div>
     </footer>
+
+    <!-- MODAL DE AUTENTICACIÓN (LOGIN Y REGISTRO) -->
+    <div class="modal fade" id="authModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title">Acceso al Sistema B2B</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Nav Tabs -->
+                    <ul class="nav nav-tabs mb-3" id="authTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active fw-bold" id="tab-login" data-bs-toggle="tab" data-bs-target="#pane-login" type="button" role="tab">Iniciar Sesión</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold" id="tab-register" data-bs-toggle="tab" data-bs-target="#pane-register" type="button" role="tab">Crear Cuenta Empresa</button>
+                        </li>
+                    </ul>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="authTabsContent">
+                        
+                        <!-- Panel Login -->
+                        <div class="tab-pane fade show active" id="pane-login" role="tabpanel">
+                            <form id="login-form">
+                                <div class="mb-3">
+                                    <label class="form-label">Usuario</label>
+                                    <input type="text" id="login-user" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Contraseña</label>
+                                    <input type="password" id="login-pass" class="form-control" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+                            </form>
+                        </div>
+
+                        <!-- Panel Registro -->
+                        <div class="tab-pane fade" id="pane-register" role="tabpanel">
+                            <form id="register-form">
+                                <div class="mb-3">
+                                    <label class="form-label">Nombre de Usuario de Empresa</label>
+                                    <input type="text" id="reg-user" class="form-control" placeholder="Ej: clinica_san_jose" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Correo Institucional</label>
+                                    <input type="email" id="reg-email" class="form-control" placeholder="compras@clinica.cl" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Contraseña Segura</label>
+                                    <input type="password" id="reg-pass" class="form-control" required>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">Registrar y Crear Cuenta</button>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DEL CARRITO -->
+    <div class="modal fade" id="cartModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title text-dark fw-bold"><i class="bi bi-cart3"></i> Tu Solicitud de Abastecimiento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead><tr><th>Insumo</th><th>Precio U.</th><th>Cantidad</th><th>Subtotal</th><th>Acción</th></tr></thead>
+                            <tbody id="cart-items-container"></tbody>
+                        </table>
+                    </div>
+                    <div class="text-end border-top pt-3">
+                        <h4 class="fw-bold">Total a Pagar: $<span id="cart-total">0</span></h4>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Seguir Comprando</button>
+                    <button type="button" class="btn btn-success fw-bold" onclick="checkout()"><i class="bi bi-credit-card"></i> Pagar (Checkout)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_URL = '/api';
+        let token = localStorage.getItem('access_token');
+        let authModal;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            authModal = new bootstrap.Modal(document.getElementById('authModal'));
+            document.getElementById('login-form').addEventListener('submit', doLogin);
+            document.getElementById('register-form').addEventListener('submit', doRegister);
+            
+            updateUI();
+            loadCatalog();
+        });
+
+        function showAlert(msg, type='success') {
+            const container = document.getElementById('alert-container');
+            const alertHtml = `<div class="alert alert-${type} alert-dismissible fade show shadow"><i class="bi bi-info-circle-fill"></i> ${msg}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>`;
+            container.innerHTML = alertHtml;
+            setTimeout(() => { container.innerHTML = ''; }, 5000);
+        }
+
+        function updateUI() {
+            if (token) {
+                document.getElementById('nav-login').style.display = 'none';
+                document.getElementById('nav-logout').style.display = 'block';
+                document.getElementById('nav-cart').style.display = 'block';
+                loadCart();
+            } else {
+                document.getElementById('nav-login').style.display = 'block';
+                document.getElementById('nav-logout').style.display = 'none';
+                document.getElementById('nav-cart').style.display = 'none';
+            }
+        }
+
+        // LOGIN
+        async function doLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('login-user').value;
+            const pass = document.getElementById('login-pass').value;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user, password: pass })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    token = data.access;
+                    localStorage.setItem('access_token', token);
+                    authModal.hide();
+                    showAlert('¡Sesión iniciada correctamente!');
+                    updateUI();
+                } else {
+                    showAlert('Credenciales incorrectas', 'danger');
+                }
+            } catch (err) { showAlert('Error de conexión', 'danger'); }
+        }
+
+        // REGISTRO
+        async function doRegister(e) {
+            e.preventDefault();
+            const user = document.getElementById('reg-user').value;
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-pass').value;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user, email: email, password: pass })
+                });
+
+                if (response.ok) {
+                    showAlert('✅ ¡Empresa registrada con éxito! Ahora ingresa tu usuario y clave para iniciar sesión.', 'success');
+                    // Limpiar formulario y cambiar de pestaña a Login
+                    document.getElementById('register-form').reset();
+                    document.getElementById('tab-login').click();
+                } else {
+                    const err = await response.json();
+                    let errMsg = '';
+                    if(err.username) errMsg += 'Usuario: ' + err.username[0] + ' ';
+                    if(err.password) errMsg += 'Contraseña: ' + err.password[0];
+                    showAlert('Error al registrar: ' + (errMsg || 'Verifica los datos'), 'danger');
+                }
+            } catch (err) { showAlert('Error de conexión', 'danger'); }
+        }
+
+        function logout() {
+            token = null;
+            localStorage.removeItem('access_token');
+            showAlert('Sesión cerrada', 'info');
+            updateUI();
+        }
+
+        function getAuthHeaders() {
+            return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
+        }
+
+        // CATALOGO
+        async function loadCatalog() {
+            const container = document.getElementById('catalog-container');
+            const res = await fetch(`${API_URL}/insumos/`);
+            const data = await res.json();
+
+            if (data.length === 0) {
+                container.innerHTML = `<div class="alert alert-info w-100 text-center">La bodega está vacía. Entra al Admin para crear productos.</div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            data.forEach(item => {
+                const outOfStock = item.stock_bodega === 0;
+                container.innerHTML += `
+                    <div class="col-md-4 mb-4">
+                        <div class="card product-card h-100 p-3">
+                            <h5 class="fw-bold text-primary">${item.nombre_comercial}</h5>
+                            <span class="badge bg-secondary mb-2" style="width: fit-content">${item.categoria_nombre || 'General'}</span>
+                            <p class="text-muted small mb-3">Principio Activo: ${item.principio_activo}<br>Vence: ${item.fecha_vencimiento}</p>
+                            <h3 class="fw-bold mb-3">$${item.precio_caja}</h3>
+                            <div class="d-flex justify-content-between align-items-center mt-auto">
+                                <div><span class="badge ${outOfStock ? 'bg-danger' : 'bg-success'} mb-1">Stock: ${item.stock_bodega} cajas</span></div>
+                                <div class="input-group" style="width: 140px;">
+                                    <input type="number" class="form-control form-control-sm text-center" id="qty-${item.id}" value="1" min="1" max="${item.stock_bodega}" ${outOfStock ? 'disabled' : ''}>
+                                    <button class="btn btn-primary btn-sm" onclick="addToCart(${item.id})" ${outOfStock ? 'disabled' : ''}><i class="bi bi-plus-lg"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // AGREGAR AL CARRO
+        async function addToCart(insumoId) {
+            if (!token) { showAlert('Debes iniciar sesión primero', 'warning'); return; }
+            const qty = document.getElementById(`qty-${insumoId}`).value;
+            const res = await fetch(`${API_URL}/carro-insumos/`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ insumo: insumoId, cantidad: parseInt(qty) })
+            });
+
+            if (res.ok) {
+                showAlert('Agregado al carro de compras');
+                loadCart(); 
+            } else if (res.status === 403) {
+                showAlert('⛔ Acceso denegado: Solo las Instituciones Médicas pueden comprar.', 'danger');
+            } else {
+                const err = await res.json();
+                showAlert(`Error: ${err.error || 'Hubo un problema'}`, 'danger');
+            }
+        }
+
+        // VER CARRO
+        async function loadCart() {
+            if(!token) return;
+            const res = await fetch(`${API_URL}/carro-insumos/`, { headers: getAuthHeaders() });
+            
+            if (res.ok) {
+                const carro = await res.json();
+                const items = carro.items || [];
+                document.getElementById('cart-badge').innerText = items.length;
+                const container = document.getElementById('cart-items-container');
+                container.innerHTML = '';
+                let total = 0;
+
+                if (items.length === 0) {
+                    container.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Tu carro está vacío</td></tr>`;
+                } else {
+                    items.forEach(item => {
+                        const precio = parseFloat(item.insumo_detalle.precio_caja);
+                        const subtotal = precio * item.cantidad;
+                        total += subtotal;
+                        container.innerHTML += `
+                            <tr>
+                                <td class="fw-bold">${item.insumo_detalle.nombre_comercial}</td>
+                                <td>$${precio}</td>
+                                <td>${item.cantidad}</td>
+                                <td class="fw-bold text-primary">$${subtotal}</td>
+                                <td><button class="btn btn-sm btn-outline-danger" onclick="deleteFromCart(${item.id})"><i class="bi bi-trash"></i></button></td>
+                            </tr>
+                        `;
+                    });
+                }
+                document.getElementById('cart-total').innerText = total;
+            } else if (res.status === 403) {
+                 document.getElementById('cart-badge').innerText = "!";
+            }
+        }
+
+        // BORRAR DEL CARRO
+        async function deleteFromCart(itemId) {
+            const res = await fetch(`${API_URL}/carro-insumos/${itemId}/`, { method: 'DELETE', headers: getAuthHeaders() });
+            if (res.ok) { showAlert('Ítem eliminado', 'info'); loadCart(); }
+            else if (res.status === 403) { showAlert('⛔ Permiso denegado.', 'danger'); }
+        }
+
+        // CHECKOUT
+        async function checkout() {
+            if (!token) return;
+            const res = await fetch(`${API_URL}/solicitudes/confirmar/`, { method: 'POST', headers: getAuthHeaders() });
+            if (res.ok) {
+                showAlert('✅ ¡Transacción Aprobada! El stock físico ha sido descontado.', 'success');
+                const modal = bootstrap.Modal.getInstance(document.getElementById('cartModal'));
+                modal.hide();
+                loadCart();
+                loadCatalog();
+            } else if (res.status === 403) {
+                showAlert('⛔ Acceso denegado: Tu usuario no tiene el Rol de Institución Médica.', 'danger');
+            } else {
+                const err = await res.json();
+                showAlert(`Error: ${err.error || 'Stock insuficiente o carro vacío'}`, 'danger');
+            }
+        }
+    </script>
 </body>
 </html>

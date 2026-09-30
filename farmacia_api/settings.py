@@ -112,10 +112,28 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-# Configuración de drf-spectacular (Swagger)
+# Configuración de drf-spectacular (Swagger / Redoc)
 SPECTACULAR_SETTINGS = {
     'TITLE': 'API Farmacia B2B',
-    'DESCRIPTION': 'Documentación de la API para Pedidos de Insumos Médicos y Farmacia',
+    'DESCRIPTION': (
+        'Documentación completa de los servicios Backend para la gestión de Insumos Médicos y Carro de Compras.\n\n'
+        '**Características principales:**\n'
+        '* Autenticación segura mediante **JSON Web Tokens (JWT)**.\n'
+        '* Control **Transaccional** de inventario (el stock solo se descuenta al pagar).\n'
+        '* Carro de compras persistente anclado a la base de datos.\n'
+        '* **Borrado Lógico** integrado en el catálogo.\n\n'
+        '---\n'
+        '**Desarrollo Backend:** Edu | **Sección:** IEC-N4-C2 | **Año:** 2026'
+    ),
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,  # ¡No se borra el token al recargar la página!
+        'displayOperationId': False,
+    },
+    'CONTACT': {
+        'name': 'Soporte Backend Edu',
+        'email': 'alumno@institucion.edu',
+    }
 }
